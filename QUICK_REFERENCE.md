@@ -8,7 +8,7 @@
 mkdir teams/my_team
 
 # Copy template
-cp src/base_agent.py teams/my_team/bidding_agent.py
+cp AGENT_TEMPLATE.py teams/my_team/bidding_agent.py
 ```
 
 ### 2. Implement Your Strategy
