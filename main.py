@@ -289,12 +289,12 @@ def validate_agent(agent_file: str):
         if error:
             logging.warning(f"Bid execution warning: {error}")
         else:
-            logging.info(f"✓ Test bid successful: {bid:.2f} (took {exec_time:.3f}s)")
+            logging.info(f"Test bid successful: {bid:.2f} (took {exec_time:.3f}s)")
     except Exception as e:
-        logging.error(f"❌ Bid execution failed: {e}")
+        logging.error(f"Bid execution failed: {e}")
         return False
     
-    logging.info("✓ Agent validation PASSED")
+    logging.info("Agent validation PASSED")
     return True
 
 

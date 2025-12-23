@@ -50,7 +50,7 @@ class AuctionEngine:
             return 0.0, False
         
         if bid > budget:
-            logger.warning(f"Team {team_id}: Bid {bid:.2f} exceeds budget {budget:.2f}, capping to budget")
+            # logger.warning(f"Team {team_id}: Bid {bid:.2f} exceeds budget {budget:.2f}, capping to budget")
             return round(budget, 2), True
         
         # Round bid to 2 decimal places
