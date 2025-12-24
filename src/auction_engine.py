@@ -139,8 +139,8 @@ class AuctionEngine:
                 capped_teams.append(team_id)
         
         logger.debug(f"Validated bids: {validated_bids}")
-        if capped_teams:
-            logger.warning(f"Teams with capped bids: {capped_teams}")
+        # if capped_teams:
+        #     logger.warning(f"Teams with capped bids: {capped_teams}")
         
         # Determine winner and price
         winner_id, price_paid, tied_teams = self.determine_winner(validated_bids)

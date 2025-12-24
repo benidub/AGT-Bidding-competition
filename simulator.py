@@ -36,10 +36,12 @@ class Simulator:
     Students can use this to test against example strategies.
     """
     
-    def __init__(self, seed: int = None, timeout: float = BID_TIMEOUT_SECONDS):
+    def __init__(self, seed: int = None, timeout: float = BID_TIMEOUT_SECONDS, print_log=False):
         self.seed = seed
         self.timeout = timeout
         self.valuation_generator = ValuationGenerator(random_seed=seed)
+        self.print_log = print_log
+
         
     def load_example_opponents(self) -> list:
         """Load all example agents as opponents"""
@@ -153,7 +155,8 @@ class Simulator:
         
         # Run games
         for game_num in range(1, num_games + 1):
-            print(f"\n--- Game {game_num}/{num_games} ---")
+            if self.print_log:
+                print(f"\n--- Game {game_num}/{num_games} ---")
             
             game_result = self.simulate_game(your_agent_path, opponents, game_num)
             
@@ -183,9 +186,10 @@ class Simulator:
                 if team_id == 'your_agent':
                     stats['your_agent']['ranks'].append(rank)
                     break
-            
-            # Print game summary
-            print(f"  Winner: {winner_id} (Utility: {results_list[0][1].utility:.2f})")
+
+            if self.print_log:
+                # Print game summary
+                print(f"  Winner: {winner_id} (Utility: {results_list[0][1].utility:.2f})")
             
             your_result = game_result.team_results.get('your_agent')
             if your_result:
