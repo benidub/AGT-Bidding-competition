@@ -110,3 +110,5 @@ class BiddingAgent:
             bid = max(bid, 1.62)
 
         return round(float(max(0.0, bid)), 2)
+
+
