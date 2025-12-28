@@ -16,6 +16,7 @@ Key Features:
 - [Feature 2]
 - [Feature 3]
 """
+import math
 from enum import StrEnum
 from typing import Dict, List
 
@@ -80,6 +81,7 @@ class BiddingAgent:
         # Examples:
         self.price_history = []  # Track observed prices
         self.my_seen_evaluations = []  # Track valuations of items seen so far
+        self.my_unseen_evaluations: Dict[str, float] = {k: v for k, v in valuation_vector.items()}  # Track valuations of items that have not been seen yet
         self.remaining_opponents_budgets = {opp: budget for opp in opponent_teams}  # Estimate opponent budgets
         self.opponent_wins = {opp: [] for opp in opponent_teams}  # Track which opponents win what
 
@@ -184,6 +186,9 @@ class BiddingAgent:
         # Track seen valuations
         self.my_seen_evaluations.append(self.valuation_vector.get(item_id, 0))
 
+        self.my_unseen_evaluations.pop(item_id)
+
+
         # Track opponent performance
         # if winning_team and winning_team != self.team_id:
         #     self.opponent_wins[winning_team] = \
@@ -244,18 +249,21 @@ class BiddingAgent:
         # TODO: IMPLEMENT YOUR BIDDING STRATEGY HERE
         # ============================================================
 
-        # if self.rounds_completed == 0:
-        #     return self._validate_bid(my_valuation)
-        # if self.rounds_completed == self.total_rounds - 1:
-        #     return self._validate_bid(my_valuation)
-        #
-        # biggest_opponent_budget = self._get_biggest_remaining_opponent_budget()
-        # if my_valuation > biggest_opponent_budget and self.budget >= biggest_opponent_budget:
-        #     # Bid aggressively if we can outbid everyone
-        #     bid = self.budget
-        # else:
-        #     bid = my_valuation
-        # return self._validate_bid(bid)
+        # In first round we want to be truthful
+        if self.rounds_completed == 0:
+            return self._validate_bid(my_valuation)
+
+        # TODO: CONSIDER what we should do in the last round
+        if self.rounds_completed == self.total_rounds - 1:
+            return self._validate_bid(my_valuation)
+
+        # See if we can beat opponents in case that they have no budget left
+        biggest_opponent_budget = self._get_biggest_remaining_opponent_budget()
+        if my_valuation > biggest_opponent_budget and self.budget >= biggest_opponent_budget:
+            # Bid aggressively if we can outbid everyone
+            bid = self.budget
+        else:
+            bid = my_valuation
 
         # if my_valuation < 5.5:
         #     return self._validate_bid(5.5)
@@ -263,7 +271,15 @@ class BiddingAgent:
         #     return self._validate_bid(my_valuation - 1.0)
         # return self._validate_bid(my_valuation)
 
-        return self._validate_bid(my_valuation / (1 + self.acceptable_ratio))
+        updated_unseen_evaluations = {k: v for k, v in self.my_unseen_evaluations.items() if k != item_id}
+        expected_max_item_that_would_be_seen = self._calculate_expected_remaining_max_item(updated_unseen_evaluations)
+        print(f"{expected_max_item_that_would_be_seen=}")
+
+
+        # if my_valuation >= max_unseen_evaluation / 2:
+            # current item is not worth even half of the max we can get
+
+        return self._validate_bid(bid)
 
         # ============================================================
         # END OF STRATEGY IMPLEMENTATION
@@ -274,6 +290,19 @@ class BiddingAgent:
     # ================================================================
 
     # TODO: Add any helper methods you
+    def _calculate_expected_remaining_max_item(self, unseen_items_valuations: Dict[str, float]) -> float:
+        number_of_items = len(unseen_items_valuations)
+        number_of_items_that_will_be_known = number_of_items - 5
+        items_values = list(unseen_items_valuations.values())
+        sorted_items_values = sorted(items_values)
+        denominator = math.comb(number_of_items, number_of_items_that_will_be_known)
+        expectation = 0
+        for k in range(number_of_items_that_will_be_known, number_of_items + 1):
+            prob = math.comb(k - 1, number_of_items_that_will_be_known - 1) / denominator
+            expectation += sorted_items_values[k - 1] * prob
+        return expectation
+
+
 
     def _update_items_type_table(self, item_id, winning_team, price_paid):
         my_valuation = self.valuation_vector.get(item_id, 0)

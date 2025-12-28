@@ -210,6 +210,8 @@ class Simulator:
         avg_items = your_stats['total_items'] / num_games
         avg_spent = your_stats['total_spent'] / num_games
         win_rate = (your_stats['games_won'] / num_games) * 100
+
+        print(f"{win_rate=}")
         
         if your_stats['ranks']:
             avg_rank = sum(your_stats['ranks']) / len(your_stats['ranks'])
