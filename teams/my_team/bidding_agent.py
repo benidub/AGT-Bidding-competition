@@ -249,6 +249,8 @@ class BiddingAgent:
         # TODO: IMPLEMENT YOUR BIDDING STRATEGY HERE
         # ============================================================
 
+        progress = 1 - (rounds_remaining / self.total_rounds)  # Goes from 0 -> 1
+
         # In first round we want to be truthful
         if self.rounds_completed == 0:
             return self._validate_bid(my_valuation)
@@ -276,9 +278,12 @@ class BiddingAgent:
             # This item is not worth half of the expected max, So we will not want to pay a lot for it.
             # Option 1: bid 0
             # Option 2: bid more than the valuation so others will pay more
-            return self._validate_bid(min(my_valuation, 5.5))
+            if progress <= 0.5:
+                return self._validate_bid(min(my_valuation, 5.5))
+            else:
+                return self._validate_bid(my_valuation)
         elif my_valuation >= expected_max_item_that_would_be_seen:
-            return self._validate_bid(my_valuation - 2)
+            return self._validate_bid(my_valuation - 1)
         else:
             # max_expected / 2 <= my_valuation <= max_expected
             return self._validate_bid(my_valuation)
