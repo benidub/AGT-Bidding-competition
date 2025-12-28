@@ -49,4 +49,4 @@ TEAM_LOGGING = False    # Minimal logging for teams
 ITEM_ID_FORMAT = "item_{}"
 
 # Random seed for reproducibility (optional)
-RANDOM_SEED = None  # Set to int for reproducible results
+RANDOM_SEED = 123  # Set to int for reproducible results
