@@ -261,9 +261,7 @@ class BiddingAgent:
         biggest_opponent_budget = self._get_biggest_remaining_opponent_budget()
         if my_valuation > biggest_opponent_budget and self.budget >= biggest_opponent_budget:
             # Bid aggressively if we can outbid everyone
-            bid = self.budget
-        else:
-            bid = my_valuation
+            return self._validate_bid(self.budget)
 
         # if my_valuation < 5.5:
         #     return self._validate_bid(5.5)
@@ -273,11 +271,18 @@ class BiddingAgent:
 
         updated_unseen_evaluations = {k: v for k, v in self.my_unseen_evaluations.items() if k != item_id}
         expected_max_item_that_would_be_seen = self._calculate_expected_remaining_max_item(updated_unseen_evaluations)
-        print(f"{expected_max_item_that_would_be_seen=}")
 
+        if my_valuation < expected_max_item_that_would_be_seen / 2:
+            # This item is not worth half of the expected max, So we will not want to pay a lot for it.
+            # Option 1: bid 0
+            # Option 2: bid more than the valuation so others will pay more
+            return self._validate_bid(min(my_valuation, 5.5))
+        elif my_valuation >= expected_max_item_that_would_be_seen:
+            return self._validate_bid(my_valuation - 2)
+        else:
+            # max_expected / 2 <= my_valuation <= max_expected
+            return self._validate_bid(my_valuation)
 
-        # if my_valuation >= max_unseen_evaluation / 2:
-            # current item is not worth even half of the max we can get
 
         return self._validate_bid(bid)
 
