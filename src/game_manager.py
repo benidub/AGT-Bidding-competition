@@ -34,7 +34,8 @@ class GameManager:
     def __init__(self, stage: int, arena_id: str, game_number: int,
                  valuation_generator: ValuationGenerator,
                  auction_engine: AuctionEngine,
-                 agent_manager: AgentManager):
+                 agent_manager: AgentManager,
+                 fixed_valuations: Dict = None):
         """
         Initialize game manager.
         
@@ -45,6 +46,7 @@ class GameManager:
             valuation_generator: Valuation generator instance
             auction_engine: Auction engine instance
             agent_manager: Agent manager instance
+            fixed_valuations: Optional pre-generated valuations to use for all games in arena
         """
         self.stage = stage
         self.arena_id = arena_id
@@ -54,6 +56,7 @@ class GameManager:
         self.valuation_generator = valuation_generator
         self.auction_engine = auction_engine
         self.agent_manager = agent_manager
+        self.fixed_valuations = fixed_valuations  # Store fixed valuations if provided
         
         self.agents = {}
         self.budgets = {}
@@ -76,11 +79,15 @@ class GameManager:
         logger.info(f"Teams: {list(team_agents.keys())}")
         
         try:
-            # Generate valuations for all teams
+            # Use fixed valuations if provided, otherwise generate new ones
             team_ids = list(team_agents.keys())
-            self.valuations, item_categories = self.valuation_generator.generate_arena_valuations(team_ids)
-            logger.info(f"Generated valuations for {len(team_ids)} teams")
-            logger.debug(f"Item categories: High={item_categories[0]}, Low={item_categories[1]}, Mixed={item_categories[2]}")
+            if self.fixed_valuations is not None:
+                self.valuations = self.fixed_valuations
+                logger.info(f"Using fixed valuations for {len(team_ids)} teams")
+            else:
+                self.valuations, item_categories = self.valuation_generator.generate_arena_valuations(team_ids)
+                logger.info(f"Generated valuations for {len(team_ids)} teams")
+                logger.debug(f"Item categories: High={item_categories[0]}, Low={item_categories[1]}, Mixed={item_categories[2]}")
             
             # Generate auction sequence
             self.auction_sequence = self.valuation_generator.get_random_auction_sequence(T_AUCTION_ROUNDS)
