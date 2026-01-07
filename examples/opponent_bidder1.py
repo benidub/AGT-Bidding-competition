@@ -90,6 +90,7 @@ class BiddingAgent:
         # אם אנחנו עשירים מהיריב וזה פריט בעל ערך, אנחנו לא עושים Shading.
         # אנחנו פשוט מציעים מחיר שינעל אותו בחוץ.
         if wealth_ratio > 1.3 and my_val > 10:
+            pass
             bid = max(bid, richest_opp_fund + 0.11)
 
         # אסטרטגיית ה-Predator:
