@@ -197,7 +197,6 @@ class BiddingAgent:
         # Target spend per remaining round
         target = budget_rem / max(1, rounds_rem)
 
-
         # Endgame spend-down: reduce shading
         if rounds_rem <= 3:
             return 0.0
@@ -287,6 +286,3 @@ class BiddingAgent:
         self._last_prior = qpre
 
         return float(max(0.0, min(bid, self.budget))) #27%!
-        ## 27.0%, avg rang: 2.63, avg utility 12.29, avg_item: 3.5, avg budget: 38.67
-
-        #############
